@@ -30,8 +30,8 @@ cd ../api
 info "Iniciando APP e API"
 
 # Iniciar servidor Laravel
-# php artisan serve & vue server
 php artisan serve
+
 
 cd ../
 # Mensagem de encerramento

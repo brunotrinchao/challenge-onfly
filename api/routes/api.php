@@ -17,10 +17,8 @@ use App\Http\Controllers\ExpenseController;
 |
 */
 
-Route::prefix('/auth')->group(function () {
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/register', [AuthController::class, 'register'])->name('register');
-});
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/register', [AuthController::class, 'register'])->name('register');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     // Route::apiResource('/user', UsersController::class);

@@ -9,6 +9,16 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Auth\Access\AuthorizationException;
 
+/**
+ * @OA\Schema(
+ *     schema="ExpenseUpdateRequest",
+ *     title="Expense Update Request",
+ *     required={"description", "date", "amount"},
+ *     @OA\Property(property="description", type="string", maxLength=191, example="Expense description"),
+ *     @OA\Property(property="date", type="string", format="date", example="2024-01-19"),
+ *     @OA\Property(property="amount", type="number", minimum=0, example=9.99)
+ * )
+ */
 class ExpenseUpdateRequest extends FormRequest
 {
 
