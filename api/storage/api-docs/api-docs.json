@@ -6,7 +6,7 @@
         "version": "1.0"
     },
     "paths": {
-        "/api/auth/login": {
+        "/api/login": {
             "post": {
                 "tags": [
                     "Auth"
@@ -100,7 +100,7 @@
                 }
             }
         },
-        "/api/auth/register": {
+        "/api/register": {
             "post": {
                 "tags": [
                     "Auth"
