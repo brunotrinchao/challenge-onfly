@@ -1,0 +1,14 @@
+version: '3'
+services:
+  db:
+    image: mysql:5.7
+    container_name: onfly-db
+    volumes:
+      - ./data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=onfly
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=root
+    ports:
+      - '3309:3306'
