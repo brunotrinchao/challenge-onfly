@@ -10,8 +10,16 @@
 
 const ESLintPlugin = require('eslint-webpack-plugin')
 
-module.exports = function (/* ctx */) {
+module.exports = function (ctx) {
   return {
+    eslint: {
+      // fix: true,
+      // include: [],
+      // exclude: [],
+      // rawOptions: {},
+      warnings: true,
+      errors: true
+    },
     // https://v1.quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
 
@@ -70,7 +78,12 @@ module.exports = function (/* ctx */) {
       chainWebpack (chain) {
         chain.plugin('eslint-webpack-plugin')
           .use(ESLintPlugin, [{ extensions: [ 'js', 'vue' ] }])
-      }
+      },
+      env: {
+        API_URL: ctx.app
+          ? 'http://localhost:8000/api/'
+          : 'http://localhost:8000/api/'
+      },
     },
 
     // Full list of options: https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
@@ -82,8 +95,6 @@ module.exports = function (/* ctx */) {
 
     // https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
-      iconSet: 'material-icons', // Quasar icon set
-      lang: 'en-us', // Quasar language pack
       config: {},
 
       // Possible values for "importStrategy":
@@ -104,18 +115,7 @@ module.exports = function (/* ctx */) {
 
     // animations: 'all', // --- includes all animations
     // https://v1.quasar.dev/options/animations
-    animations: [], 
-
-     sourceFiles: {
-      // rootComponent: 'src/App.vue',
-      // router: 'src/router/index',
-      store: 'src/store/index',
-      // registerServiceWorker: 'src-pwa/register-service-worker',
-      // serviceWorker: 'src-pwa/custom-service-worker',
-      // pwaManifestFile: 'src-pwa/manifest.json',
-      // electronMain: 'src-electron/electron-main',
-      // electronPreload: 'src-electron/electron-preload'
-    },
+    animations: [],
 
     // https://v1.quasar.dev/quasar-cli/developing-ssr/configuring-ssr
     ssr: {
@@ -127,8 +127,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: `App Onfly`,
-        short_name: `App Onfly`,
+        name: `Onfly app`,
+        short_name: `Onfly app`,
         description: `A Quasar Project`,
         display: 'standalone',
         orientation: 'portrait',

@@ -1,4 +1,4 @@
-# App Onfly (app)
+# Onfly app (app)
 
 A Quasar Project
 
