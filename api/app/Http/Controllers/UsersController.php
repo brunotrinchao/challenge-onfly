@@ -89,7 +89,7 @@ class UsersController extends Controller
             $this->authorize('viewAny', User::class);
 
             $user = Auth::user();
-            $query  = User::where('id', '!=', $user->id);
+            $query  = new User();
             if ($request->has('sort')) {
 
                 $sortField = $request->input('sort');
@@ -147,7 +147,7 @@ class UsersController extends Controller
         try {
             $auth = Auth::user();
             $authId = $auth->id;
-            $this->authorize('create', User::class, $authId);
+            $this->authorize('create', User::class);
 
             $validatedValues = $request->validated();
 
@@ -211,7 +211,7 @@ class UsersController extends Controller
 
             $expense = User::firstOrFail($id);
 
-            $this->authorize('view', $expense);
+            $this->authorize('view', User::class);
 
             return new UserResource($expense);
         } catch (ModelNotFoundException $e) {
@@ -278,7 +278,7 @@ class UsersController extends Controller
     {
         try {
             $expense = User::where('id', $id)->firstOrFail();
-            $this->authorize('update', $expense);
+            $this->authorize('update', User::class);
 
             $validatedValues = $request->validated();
             $validatedValues['password'] = Hash::make($validatedValues['password']);
@@ -332,18 +332,15 @@ class UsersController extends Controller
     public function destroy(Request $request, $id)
     {
         try {
-            $expense = User::findOrFail($id);
+            $user = User::findOrFail($id);
 
-            $auth = Auth::user();
-            $authId = $auth->id;
-            $this->authorize('create', User::class, $authId);
-
-            $expense->delete();
-            return new UserResource($expense);
+            $this->authorize('delete', $user);
+            $user->delete();
+            return new UserResource($user);
         } catch (ModelNotFoundException $e) {
             return response()->json(['success'   => false, 'message' => 'Despesa não encontrada'], 404);
         } catch (\Exception $e) {
-            return response()->json(['success'   => false, 'message' => 'Erro interno do servidor'], 500);
+            return response()->json(['success'   => false, 'message' => $e->getMessage()], 500);
         }
     }
 }

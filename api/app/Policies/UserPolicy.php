@@ -3,16 +3,16 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades;
+
+use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
-    use HandlesAuthorization;
     public function viewAny(User $user)
     {
         return true;
+
     }
 
     public function view(User $user)
@@ -25,15 +25,18 @@ class UserPolicy
         return true;
     }
 
-    public function update(User $user, User $auth)
+    public function update(User $user)
     {
 
-        return $user->id !== $auth->id;
+        return true;
     }
 
-    public function delete(User $user, User $auth)
+    public function delete(User $user, User $userDel): Response
     {
-        return $user->id !== $auth->id;
+        $auth = Auth::user();
+        $authId = $auth->id;
+
+        return $userDel->id !== $authId ? Response::allow() : Response::deny('N"ao pode excluir seu próprio usuário.');
 
     }
 

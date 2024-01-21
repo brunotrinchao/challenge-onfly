@@ -11,6 +11,7 @@ class ExpenseResource extends JsonResource
     *     schema="ExpenseResource",
     *     title="Expense Resource",
     *     @OA\Property(property="id", type="integer", example="1"),
+    *     @OA\Property(property="user_id", type="integer", example="1"),
     *     @OA\Property(property="description", type="string", example="Expense description"),
     *     @OA\Property(property="date", type="string", format="date", example="2022-01-01"),
     *     @OA\Property(property="amount", type="number", format="float", example="10.99"),
@@ -25,6 +26,7 @@ class ExpenseResource extends JsonResource
     {
         return [
              'id' => $this->id,
+             'user_id' => $this->user_id,
             'description' => $this->description,
             'date' => $this->date,
             'amount' => $this->amount,
