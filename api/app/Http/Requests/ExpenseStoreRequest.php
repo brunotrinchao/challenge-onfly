@@ -72,11 +72,27 @@ class ExpenseStoreRequest extends FormRequest
 
     public function failedValidation(Validator $validator)
     {
+        $errorsArray = $validator->errors()->toArray();
 
         throw new HttpResponseException(response()->json([
             'success'   => false,
-            'error'      => $validator->errors()
+            'message'      => $this->convertArrayToString($errorsArray)
+
         ]));
 
+    }
+
+    protected function convertArrayToString($array)
+    {
+        $result = '';
+
+        foreach ($array as $key => $messages) {
+            $result .= implode('<br/>', $messages) . '<br/>';
+        }
+
+        $result = rtrim($result, '<br/>');
+
+
+        return $result;
     }
 }

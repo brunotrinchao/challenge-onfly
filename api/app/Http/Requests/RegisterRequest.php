@@ -47,12 +47,27 @@ class RegisterRequest extends FormRequest
 
     public function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json([
+        $errorsArray = $validator->errors()->toArray();
 
+        throw new HttpResponseException(response()->json([
             'success'   => false,
-            'message'      => $validator->errors()
+            'message'      => $this->convertArrayToString($errorsArray)
 
         ]));
 
+    }
+
+    protected function convertArrayToString($array)
+    {
+        $result = '';
+
+        foreach ($array as $key => $messages) {
+            $result .= implode('<br/>', $messages) . '<br/>';
+        }
+
+        $result = rtrim($result, '<br/>');
+
+
+        return $result;
     }
 }

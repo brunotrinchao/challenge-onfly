@@ -1,26 +1,48 @@
-
 const routes = [
   {
-    path: '/',
-    component: () => import('layouts/LoginLayout.vue'),
+    path: "/",
+    component: () => import("layouts/LoginLayout.vue"),
     children: [
-      { path: '', component: () => import('pages/Login .vue') }
-    ]
+      {
+        path: "",
+        name: "login",
+        component: () => import("pages/login/index.vue"),
+      },
+      {
+        path: "/signup",
+        name: "signup",
+        component: () => import("pages/signup/index.vue"),
+      },
+    ],
   },
   {
-    path: '/auth',
-    component: () => import('layouts/MainLayout.vue'),
+    path: "/dashboard",
+    component: () => import("layouts/MainLayout.vue"),
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
-    ]
+      {
+        path: "",
+        name: "dashboard",
+        component: () => import("pages/dashboard/index.vue"),
+      },
+      {
+        path: "/expenses",
+        name: "expenses",
+        component: () => import("pages/expenses/index.vue"),
+      },
+      {
+        path: "/users",
+        name: "users",
+        component: () => import("pages/users/index.vue"),
+      },
+    ],
   },
 
   // Always leave this as last one,
   // but you can also remove it
   {
-    path: '*',
-    component: () => import('pages/Error404.vue')
-  }
-]
+    path: "*",
+    component: () => import("pages/Error404.vue"),
+  },
+];
 
-export default routes
+export default routes;

@@ -21,19 +21,19 @@ use Illuminate\Auth\Access\AuthorizationException;
  */
 class ExpenseUpdateRequest extends FormRequest
 {
-
     protected $auth;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->auth = Auth::user();
     }
 
     public function authorize()
     {
-            $id = $this->route('expense');
-            $expense = Expense::find($id);
-            
-            return $expense &&  $this->auth->id == $expense->user_id;
+        $id = $this->route('expense');
+        $expense = Expense::find($id);
+
+        return $expense &&  $this->auth->id == $expense->user_id;
 
     }
 
@@ -74,27 +74,42 @@ class ExpenseUpdateRequest extends FormRequest
 
     public function messages(): array
     {
-            return [
-                'date.date_format:Y-m-d' => 'Data com formato inválido.',
-                'date.before_or_equal' => 'Data não pode ser maior que a data do dia.',
-                'date.required' => 'Data é obrigatório.',
-                'amount.required' => 'Valor é obrigatório.',
-                'amount.between' => 'O valor inválido.',
-                'amount.numeric' => 'O valor deve ser um número decimal.',
-                'description.max' => 'Descrição tem até 191 caracteres.',
-                'description.required' => 'A descrição é obrigatória.',
-                'user_id.required' => 'Usuário de sessão é orbigatório.'
-            ];
+        return [
+            'date.date_format:Y-m-d' => 'Data com formato inválido.',
+            'date.before_or_equal' => 'Data não pode ser maior que a data do dia.',
+            'date.required' => 'Data é obrigatório.',
+            'amount.required' => 'Valor é obrigatório.',
+            'amount.between' => 'O valor inválido.',
+            'amount.numeric' => 'O valor deve ser um número decimal.',
+            'description.max' => 'Descrição tem até 191 caracteres.',
+            'description.required' => 'A descrição é obrigatória.',
+            'user_id.required' => 'Usuário de sessão é orbigatório.'
+        ];
     }
 
     public function failedValidation(Validator $validator)
-
     {
+        $errorsArray = $validator->errors()->toArray();
 
         throw new HttpResponseException(response()->json([
             'success'   => false,
-            'error'      => $validator->errors()
+            'message'      => $this->convertArrayToString($errorsArray)
+
         ]));
 
+    }
+
+    protected function convertArrayToString($array)
+    {
+        $result = '';
+
+        foreach ($array as $key => $messages) {
+            $result .= implode('<br/>', $messages) . '<br/>';
+        }
+
+        $result = rtrim($result, '<br/>');
+
+
+        return $result;
     }
 }
