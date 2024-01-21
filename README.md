@@ -1,5 +1,8 @@
 # Desafio Onfly
 
+### Linda da apresentação:
+https://www.loom.com/share/8b9c62d5df32450baeae83e75ce06e4b
+
 ##  Descrição do Projeto
 Este projeto foi desenvolvido como parte de um desafio proposto pela Onfly. Utilidando para backend laravel com mysql (Docker) e para frontend vue.js com quasar.
 
