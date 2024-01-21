@@ -27,7 +27,7 @@
                   filled
                   type="date"
                   label="Data"
-                  :rules="[validator.requiredField]"
+                  class="q-mb-md"
                 />
               </div>
               <div class="col">
@@ -37,7 +37,7 @@
                   label="Valor"
                   prefix="R$"
                   type="number"
-                  :rules="[validator.requiredField]"
+                  class="q-mb-md"
                 />
               </div>
             </div>
@@ -46,7 +46,7 @@
               label="Descrição"
               filled
               type="textarea"
-              :rules="[validator.requiredField]"
+              class="q-mb-md"
             />
           </q-card-section>
         </q-form>

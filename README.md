@@ -22,36 +22,43 @@ Este projeto foi desenvolvido como parte de um desafio proposto pela Onfly. Util
    ```
    git clone https://github.com/brunotrinchao/challenge-onfly.git
    ```
-2. Instale as dependências do backend:
+
+2. Inicie o container do banco
+   ```
+   # Com o docker ja iniciado
+   cd db
+   docker compose up -d
+   ```
+
+3. Instale as dependências do backend:
    ```
    # Com o docker ja iniciado
    cd api
    composer install
    ```
 
-3. Execute as migrations
+4. Execute as migrations
     ``` 
     php artisan migrate
     ```
 
-3. Instale as dependências do frontend:
+5. Inicia a API
+    ``` 
+    php artisan serve
+    ```
+
+6. Instale as dependências do frontend
    ```
    cd app
    npm install
    ```
 
-4. Execute o projeto:
+7. Iniciar o APP:
    ```
-   # Na raiz do projeto
-   sh startup.sh
-   ```
-
-   ```
-   cd app
-   vue serve
+   quasar dev
    ```
 
-5. Abra o navegador e acesse http://localhost:8080
+8. Abra o navegador e acesse http://localhost:8080
 
 ## Testes
 
