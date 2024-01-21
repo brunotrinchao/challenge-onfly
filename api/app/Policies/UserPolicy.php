@@ -36,7 +36,7 @@ class UserPolicy
         $auth = Auth::user();
         $authId = $auth->id;
 
-        return $userDel->id !== $authId ? Response::allow() : Response::deny('N"ao pode excluir seu próprio usuário.');
+        return $userDel->id !== $authId ? Response::allow() : Response::deny('Não pode excluir seu próprio usuário.');
 
     }
 

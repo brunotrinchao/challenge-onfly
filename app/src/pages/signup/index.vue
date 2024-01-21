@@ -46,7 +46,7 @@
             class="q-ms-md full-width"
             color="primary"
             label="Login"
-            @click="btnform()"
+            @click="btnLogin()"
           />
         </q-card-actions>
       </q-form>

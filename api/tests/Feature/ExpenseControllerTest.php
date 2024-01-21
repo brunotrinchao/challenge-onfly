@@ -78,7 +78,7 @@ class ExpenseControllerTest extends TestCase
         // Verificar se a resposta está correta
         $response->assertStatus(201);
         // Verificar se há 1 despesa na resposta JSON
-        $response->assertJsonCount(6, 'data');
+        $response->assertJsonCount(7, 'data');
 
 
         // Obter o ID da despesa recém-inserida
@@ -124,7 +124,7 @@ class ExpenseControllerTest extends TestCase
         // Verificar se a resposta está correta
         $response->assertStatus(201);
         // Verificar se há 1 despesa na resposta JSON
-        $response->assertJsonCount(6, 'data');
+        $response->assertJsonCount(7, 'data');
 
         // Obter o ID da despesa recém-inserida
         $expenseId = $response->json('data.id');
