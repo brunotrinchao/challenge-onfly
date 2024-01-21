@@ -1,6 +1,6 @@
 # Desafio Onfly
 
-## Descrição do Projeto
+##  Descrição do Projeto
 Este projeto foi desenvolvido como parte de um desafio proposto pela Onfly. Utilidando para backend laravel com mysql (Docker) e para frontend vue.js com quasar.
 
 ## Tecnologias Utilizadas
@@ -24,9 +24,15 @@ Este projeto foi desenvolvido como parte de um desafio proposto pela Onfly. Util
    ```
 2. Instale as dependências do backend:
    ```
+   # Com o docker ja iniciado
    cd api
    composer install
    ```
+
+3. Execute as migrations
+    ``` 
+    php artisan migrate
+    ```
 
 3. Instale as dependências do frontend:
    ```
@@ -36,7 +42,7 @@ Este projeto foi desenvolvido como parte de um desafio proposto pela Onfly. Util
 
 4. Execute o projeto:
    ```
-   cd api
+   # Na raiz do projeto
    sh startup.sh
    ```
 
@@ -45,17 +51,15 @@ Este projeto foi desenvolvido como parte de um desafio proposto pela Onfly. Util
    vue serve
    ```
 
-5. Execute as migrations
-    ``` 
-    php artisan migrate
-    ```
+5. Abra o navegador e acesse http://localhost:8080
 
-5. Execute as seeds
-    ``` 
-    php artisan db:seed
-    ```
+## Testes
 
-10. Abra o navegador e acesse http://localhost:8080
+   ```
+  cd api
+  php artisan test
+   ```
+
 
 ## Documentação API
 Para acessar a documentação da api acesse http://127.0.0.1:8000/api/documentation

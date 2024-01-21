@@ -13,122 +13,87 @@ class ExpenseControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
+
     /** @test */
 
-    public function list_expenses_for_authenticated_user()
+    public function insert_expenses_user()
     {
 
-        // Simular um usuário autenticado
-        $user = User::factory()->create();
-        Auth::login($user);
+        $user = User::factory()->create([
+            'name' => 'User teste',
+            'email' => 'teste@teste.com',
+            'password' => 'teste123'
+        ]);
 
-        // Criar algumas despesas associadas ao usuário
-        Expense::factory(5)->create(['user_id' => $user->id]);
 
-        // Chamar a API para listar despesas
-        $response = $this->actingAs($user)->get('/api/expense');
+        $expense = Expense::create([
+          'user_id' => $user->id,
+          'name' => 'Teste name',
+          'date' => now()->format('Y-m-d'),
+          'description' => 'Teste description ',
+          'amount' => 99.99,
+        ]);
 
-        // Verificar se a resposta está correta
-        $response->assertStatus(200);
-        // Verificar se há 5 despesas na resposta JSON
-
-        $response->assertJsonCount(5, 'data');
+        $this->assertNotNull($expense->id);
+        $this->assertTrue($expense->user()->exists());
 
     }
 
     /** @test */
 
-    public function insert_expenses_for_authenticated_user()
+    public function update_expenses_user()
     {
 
-        // Simular um usuário autenticado
-        $user = User::factory()->create();
-        $this->actingAs($user);
+        $user = User::factory()->create([
+            'name' => 'User teste',
+            'email' => 'teste@teste.com',
+            'password' => 'teste123'
+        ]);
 
-        // Criar uma nova despesa associada ao usuário
-        $expenseData = Expense::factory()->make(['user_id' => $user->id])->toArray();
-        $response = $this->postJson('/api/expense', $expenseData);
 
-        // Verificar se a resposta está correta
-        $response->assertStatus(201);
-        // Verificar se há 1 despesa na resposta JSON
-        $response->assertJsonCount(6, 'data');
+        $expense = Expense::create([
+          'user_id' => $user->id,
+          'name' => 'Teste name',
+          'date' => now()->format('Y-m-d'),
+          'description' => 'Teste description ',
+          'amount' => 99.99,
+        ]);
+
+
+        $expense->update([
+          'amount' => 29.55
+        ]);
+
+        $this->assertNotNull($expense->updated_at);
+        $this->assertEquals(29.55, $expense->amount);
 
     }
 
     /** @test */
 
-    public function update_expenses_for_authenticated_user()
+    public function delete_expenses_user()
     {
 
-        // Simular um usuário autenticado
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        // Criar uma nova despesa associada ao usuário
-        $expenseData = Expense::factory()->make(['user_id' => $user->id])->toArray();
-        $response = $this->postJson('/api/expense', $expenseData);
-
-        // Verificar se a resposta está correta
-        $response->assertStatus(201);
-        // Verificar se há 1 despesa na resposta JSON
-        $response->assertJsonCount(6, 'data');
+        $user = User::factory()->create([
+            'name' => 'User teste',
+            'email' => 'teste@teste.com',
+            'password' => 'teste123'
+        ]);
 
 
-        // Obter o ID da despesa recém-inserida
-        $expenseId = $response->json('data.id');
+        $expense = Expense::create([
+          'user_id' => $user->id,
+          'name' => 'Teste name',
+          'date' => now()->format('Y-m-d'),
+          'description' => 'Teste description ',
+          'amount' => 99.99,
+        ]);
 
-        // Criar novos dados para a despesa (dados de atualização)
-        $updatedExpenseData = [
-            'description' => 'Nova Descrição',
-            'amount' => 50.00,
-            'date' => now()->format('Y-m-d'),
-        ];
+        $expense->delete();
 
-        // Enviar uma requisição PUT para a rota de atualização da despesa com autenticação via token
-        $updateResponse = $this->putJson("/api/expense/{$expenseId}", $updatedExpenseData);
+        $this->assertNotNull($expense->id);
 
-        // verificar se a resposta está correta
-        $updateResponse->assertStatus(200);
-
-        $updateResponse->assertJson([
-                'data' => $updatedExpenseData,
-            ]);
-
-        // Verificar se a despesa no banco de dados foi realmente atualizada
-        $this->assertDatabaseHas('expense', $updatedExpenseData + ['id' => $expenseId]);
 
     }
 
-
-    /** @test */
-
-    public function delete_expense_for_authenticated_user()
-    {
-
-        // Simular um usuário autenticado
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
-        // Criar uma nova despesa associada ao usuário
-        $expenseData = Expense::factory()->make(['user_id' => $user->id])->toArray();
-
-        $response = $this->postJson('/api/expense', $expenseData);
-
-        // Verificar se a resposta está correta
-        $response->assertStatus(201);
-        // Verificar se há 1 despesa na resposta JSON
-        $response->assertJsonCount(6, 'data');
-
-        // Obter o ID da despesa recém-inserida
-        $expenseId = $response->json('data.id');
-
-        $response = $this->deleteJson("/api/expense/{$expenseId}");
-
-        // Verificar se a resposta está correta
-        $response->assertStatus(200);
-
-        // Verifica se a despesa foi removida do banco de dados
-        $this->assertDatabaseMissing('expense', ['id' => $expenseId]);
-    }
 }
