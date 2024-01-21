@@ -11,11 +11,9 @@
           @click="leftDrawerOpen = !leftDrawerOpen"
         />
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+        <q-toolbar-title> Onfly App </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>{{ nameUser }}</div>
       </q-toolbar>
     </q-header>
 
@@ -26,17 +24,43 @@
       content-class="bg-grey-1"
     >
       <q-list>
-        <q-item-label
-          header
-          class="text-grey-8"
-        >
-          Essential Links
-        </q-item-label>
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item-label header class="text-grey-8"> Menu </q-item-label>
+        <q-item clickable @click="btnDashboard">
+          <q-item-section avatar>
+            <q-icon name="dashboard" />
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>Dashboard</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable @click="btnExpenses">
+          <q-item-section avatar>
+            <q-icon name="monetization_on" />
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>Despesas</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable @click="btnUsers">
+          <q-item-section avatar>
+            <q-icon name="group" />
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>Usuários</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable @click="btnLogout">
+          <q-item-section avatar>
+            <q-icon name="exit_to_app" />
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>Logout</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -47,63 +71,60 @@
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink.vue'
-
-const linksData = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-]
+import { LocalStorage, SessionStorage } from "quasar";
 
 export default {
-  name: 'MainLayout',
-  components: {
-    EssentialLink
-  },
-  data () {
+  name: "MainLayout",
+  data() {
     return {
+      user: null,
+      token: null,
       leftDrawerOpen: false,
-      essentialLinks: linksData
+    };
+  },
+
+  computed: {
+    nameUser() {
+      return this.user ? this.user.name : "";
+    },
+  },
+
+  beforeMount() {
+    this.token = this.$store.getters.token;
+    this.user = this.$store.getters.user;
+    let sessionToken = SessionStorage.getItem("onfly-autentication");
+    let sessionUser = SessionStorage.getItem("onfly-session");
+    if (!sessionUser) {
+      this.btnLogout();
     }
-  }
-}
+
+    if (sessionToken) {
+      this.$store.commit("SET_TOKEN", sessionToken);
+    }
+
+    if (sessionUser) {
+      this.user = sessionUser;
+      this.$store.commit("SET_USER", sessionUser);
+    }
+  },
+
+  methods: {
+    btnDashboard() {
+      this.$router.push({ name: "dashboard" });
+    },
+    btnExpenses() {
+      this.$router.push({ name: "expenses" });
+    },
+    btnUsers() {
+      this.$router.push({ name: "users" });
+    },
+    btnLogout() {
+      LocalStorage.remove("onfly-autentication");
+      SessionStorage.remove("onfly-session");
+      this.$store.commit("SET_USER", {});
+      this.$store.commit("SET_TOKEN", null);
+      this.$router.push({ name: "login" });
+    },
+  },
+};
 </script>

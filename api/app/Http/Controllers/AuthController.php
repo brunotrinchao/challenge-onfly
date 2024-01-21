@@ -72,9 +72,8 @@ class AuthController extends Controller
                 return response()->json(['success'   => false,'message' => 'Email ou senha não conferem.'], Response::HTTP_UNAUTHORIZED);
             }
 
-            $user->tokens()->delete();
             $token = $user->createToken('api');
-            return response()->json(['token' => $token->plainTextToken], Response::HTTP_ACCEPTED);
+            return response()->json(['success'   => true, 'token' => $token->plainTextToken, 'user' => $user], Response::HTTP_ACCEPTED);
         } catch (ValidationException $e) {
             return response()->json(['success'   => false,'message' => $e->errors()], Response::HTTP_UNAUTHORIZED);
 
@@ -118,10 +117,10 @@ class AuthController extends Controller
      *      )
      * )
      */
-    public function register(RegisterRequest $request)
+    public function signup(RegisterRequest $request)
     {
 
-        try{
+        try {
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -130,7 +129,7 @@ class AuthController extends Controller
 
             $token = $user->createToken('novotoken')->plainTextToken;
 
-            return response()->json(['token' => $token], Response::HTTP_CREATED);
+            return response()->json(['success'   => true, 'token' => $token, 'user' => $user], Response::HTTP_CREATED);
 
         } catch (\Exception $e) {
             return response()->json(['success'   => false,'message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);

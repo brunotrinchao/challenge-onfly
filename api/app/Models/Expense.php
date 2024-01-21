@@ -9,6 +9,8 @@ class Expense extends Model
 {
     use HasFactory;
 
+    protected $table = 'expense';
+
     protected $fillable = [
         'description',
         'date',

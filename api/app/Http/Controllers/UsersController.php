@@ -2,34 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Expense;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\ExpenseResource;
-use App\Http\Requests\ExpenseStoreRequest;
-use App\Http\Requests\ExpenseUpdateRequest;
-use App\Notifications\ExpenseNewNotification;
+use App\Http\Resources\UserResource;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\UserUpdateRequest;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * @OA\Tag(
- *     name="Expenses",
- *     description="API para gerenciamento de despesas"
+ *     name="Users",
+ *     description="API para gerenciamento de usuários"
  * )
  */
-class ExpenseController extends Controller
+
+class UsersController extends Controller
 {
     /**
      * Get Detail
      * @OA\Get(
-     *      path="/api/expenses",
-     *      operationId="getExpensesList",
-     *      tags={"Expenses"},
+     *      path="/api/users",
+     *      operationId="getUserList",
+     *      tags={"Users"},
      *      security={{"sanctum":{}}},
-     *      summary="Lista todas as despesas do usuário autenticado",
-     *      description="Retorna uma lista paginada de todas as despesas do usuário autenticado",
+     *      summary="Lista todos os usuários",
+     *      description="Retorna uma lista paginada de todos os usuários",
      *      @OA\Response(
      *          response=200,
      *          description="Sucesso",
@@ -38,7 +39,7 @@ class ExpenseController extends Controller
      *              @OA\Property(
      *                 property="data",
      *                 type="array",
-     *                   @OA\Items(ref="#/components/schemas/ExpenseResource")
+     *                   @OA\Items(ref="#/components/schemas/UserResource")
      *              ),
      *              @OA\Property(
      *                 property="links",
@@ -85,10 +86,10 @@ class ExpenseController extends Controller
     public function index(Request $request)
     {
         try {
-            $this->authorize('viewAny', Expense::class);
+            $this->authorize('viewAny', User::class);
 
             $user = Auth::user();
-            $query  = Expense::where('user_id', $user->id);
+            $query  = User::where('id', '!=', $user->id);
             if ($request->has('sort')) {
 
                 $sortField = $request->input('sort');
@@ -96,9 +97,9 @@ class ExpenseController extends Controller
                 $query->orderBy($sortField, $order);
 
             }
-            $expenses = $query ->paginate(10);
+            $users = $query ->paginate(10);
 
-            return ExpenseResource::collection($expenses);
+            return UserResource::collection($users);
         } catch(\Exception $e) {
             return response()->json(['success'   => false, 'message' => $e->getMessage()], 500);
         }
@@ -106,20 +107,20 @@ class ExpenseController extends Controller
 
     /**
      * @OA\Post(
-     *      path="/api/expenses",
-     *      operationId="createExpense",
-     *      tags={"Expenses"},
+     *      path="/api/user",
+     *      operationId="createUser",
+     *      tags={"Users"},
      *      security={{"sanctum":{}}},
-     *      summary="Cria uma nova despesa",
-     *      description="Cria uma nova despesa com base nos dados fornecidos",
+     *      summary="Cria um novo usuário",
+     *      description="Cria um novo usuário com base nos dados fornecidos",
      *      @OA\RequestBody(
      *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/ExpenseStoreRequest")
+     *          @OA\JsonContent(ref="#/components/schemas/UserStoreRequest")
      *      ),
      *      @OA\Response(
      *          response=201,
      *          description="Sucesso",
-     *          @OA\JsonContent(ref="#/components/schemas/ExpenseResource")
+     *          @OA\JsonContent(ref="#/components/schemas/UserResource")
      *      ),
      *      @OA\Response(
      *          response=422,
@@ -141,18 +142,22 @@ class ExpenseController extends Controller
      *      )
      * )
      */
-    public function store(ExpenseStoreRequest $request)
+    public function store(RegisterRequest $request)
     {
         try {
-            $this->authorize('create', Expense::class);
+            $auth = Auth::user();
+            $authId = $auth->id;
+            $this->authorize('create', User::class, $authId);
 
             $validatedValues = $request->validated();
 
-            $expense = Expense::create($validatedValues);
+            $user = User::create([
+               'name' => $request->name,
+               'email' => $request->email,
+               'password' => Hash::make($request->password)
+           ]);
 
-            $expense->user->notify(new ExpenseNewNotification($expense));
-
-            return new ExpenseResource($expense);
+            return new UserResource($user);
         } catch (ValidationException $e) {
             return response()->json(['success'   => false, 'message' => $e->getMessage()], 422);
         } catch (\Exception $e) {
@@ -162,15 +167,15 @@ class ExpenseController extends Controller
 
     /**
  * @OA\Get(
- *      path="/api/expenses/{id}",
- *      operationId="getExpenseById",
- *      tags={"Expenses"},
+ *      path="/api/user/{id}",
+ *      operationId="getUserById",
+ *      tags={"Users"},
  *       security={{"sanctum":{}}},
- *      summary="Obtém detalhes de uma despesa específica",
- *      description="Retorna detalhes de uma despesa com base no ID fornecido",
+ *      summary="Obtém detalhes de um usuário específica",
+ *      description="Retorna detalhes de um usuário com base no ID fornecido",
  *      @OA\Parameter(
  *          name="id",
- *          description="ID da despesa",
+ *          description="ID do usuário",
  *          required=true,
  *          in="path",
  *          @OA\Schema(type="integer")
@@ -178,11 +183,11 @@ class ExpenseController extends Controller
  *      @OA\Response(
  *          response=200,
  *          description="Sucesso",
- *          @OA\JsonContent(ref="#/components/schemas/ExpenseResource")
+ *          @OA\JsonContent(ref="#/components/schemas/UserResource")
  *      ),
  *      @OA\Response(
  *          response=404,
- *          description="Despesa não encontrada",
+ *          description="Usuário não encontrado",
  *          @OA\JsonContent(
  *              type="object",
  *              @OA\Property(property="success", type="boolean", example=false),
@@ -204,11 +209,11 @@ class ExpenseController extends Controller
     {
         try {
 
-            $expense = Expense::firstOrFail($id);
+            $expense = User::firstOrFail($id);
 
             $this->authorize('view', $expense);
 
-            return new ExpenseResource($expense);
+            return new UserResource($expense);
         } catch (ModelNotFoundException $e) {
             return response()->json(['success'   => false, 'message' => 'Despesa não encontrada.'], 404);
         } catch (\Exception $e) {
@@ -218,31 +223,31 @@ class ExpenseController extends Controller
 
     /**
  * @OA\Put(
- *      path="/api/expenses/{id}",
- *      operationId="updateExpense",
- *      tags={"Expenses"},
+ *      path="/api/user/{id}",
+ *      operationId="updateUser",
+ *      tags={"Users"},
  *      security={{"sanctum":{}}},
- *      summary="Atualiza uma despesa existente",
- *      description="Atualiza uma despesa existente com base no ID fornecido e nos dados fornecidos",
+ *      summary="Atualiza um usuário existente",
+ *      description="Atualiza um usuário existente com base no ID fornecido e nos dados fornecidos",
  *      @OA\Parameter(
  *          name="id",
- *          description="ID da despesa",
+ *          description="ID do usuário",
  *          required=true,
  *          in="path",
  *          @OA\Schema(type="integer")
  *      ),
  *      @OA\RequestBody(
  *          required=true,
- *          @OA\JsonContent(ref="#/components/schemas/ExpenseUpdateRequest")
+ *          @OA\JsonContent(ref="#/components/schemas/UserUpdateRequest")
  *      ),
  *      @OA\Response(
  *          response=200,
  *          description="Sucesso",
- *          @OA\JsonContent(ref="#/components/schemas/ExpenseResource")
+ *          @OA\JsonContent(ref="#/components/schemas/UserResource")
  *      ),
  *      @OA\Response(
  *          response=404,
- *          description="Despesa não encontrada",
+ *          description="Usuário não encontrada",
  *          @OA\JsonContent(
  *              type="object",
  *              @OA\Property(property="success", type="boolean", example=false),
@@ -269,17 +274,17 @@ class ExpenseController extends Controller
  *      )
  * )
  */
-    public function update(ExpenseUpdateRequest $request, $id)
+    public function update(UserUpdateRequest $request, $id)
     {
         try {
-            $expense = Expense::where('id', $id)->firstOrFail();
-
+            $expense = User::where('id', $id)->firstOrFail();
             $this->authorize('update', $expense);
 
             $validatedValues = $request->validated();
+            $validatedValues['password'] = Hash::make($validatedValues['password']);
 
             $expense->update($validatedValues);
-            return new ExpenseResource($expense);
+            return new UserResource($expense);
         } catch (AuthorizationException $e) {
             return response()->json(['success'   => false, 'message' => $e->getMessage()], 404);
         } catch (ModelNotFoundException $e) {
@@ -294,15 +299,15 @@ class ExpenseController extends Controller
 
     /**
  * @OA\Delete(
- *      path="/api/expenses/{id}",
- *      operationId="deleteExpense",
- *      tags={"Expenses"},
+ *      path="/api/User/{id}",
+ *      operationId="deleteUser",
+ *      tags={"Users"},
  *      security={{"sanctum": {}}},
- *      summary="Exclui uma despesa",
- *      description="Exclui uma despesa com base no ID fornecido",
+ *      summary="Exclui um usuário",
+ *      description="Exclui um usuário com base no ID fornecido",
  *      @OA\Parameter(
  *          name="id",
- *          description="ID da despesa",
+ *          description="ID do usuário",
  *          required=true,
  *          in="path",
  *          @OA\Schema(type="integer")
@@ -310,7 +315,7 @@ class ExpenseController extends Controller
  *      @OA\Response(
  *          response=200,
  *          description="Sucesso",
- *          @OA\JsonContent(ref="#/components/schemas/ExpenseResource")
+ *          @OA\JsonContent(ref="#/components/schemas/UserResource")
  *      ),
  *      @OA\Response(
  *          response=404,
@@ -327,13 +332,14 @@ class ExpenseController extends Controller
     public function destroy(Request $request, $id)
     {
         try {
-            $expense = Expense::findOrFail($id);
+            $expense = User::findOrFail($id);
 
-            // Autoriza a exclusão da despesa
-            $this->authorize('delete', $expense);
+            $auth = Auth::user();
+            $authId = $auth->id;
+            $this->authorize('create', User::class, $authId);
 
             $expense->delete();
-            return new ExpenseResource($expense);
+            return new UserResource($expense);
         } catch (ModelNotFoundException $e) {
             return response()->json(['success'   => false, 'message' => 'Despesa não encontrada'], 404);
         } catch (\Exception $e) {

@@ -50,9 +50,14 @@ Este projeto foi desenvolvido como parte de um desafio proposto pela Onfly. Util
     php artisan migrate
     ```
 
+5. Execute as seeds
+    ``` 
+    php artisan db:seed
+    ```
+
 10. Abra o navegador e acesse http://localhost:8080
 
 ## Documentação API
-Para acessar a documentação da api acesse http://localhost:8000/api/documentation
+Para acessar a documentação da api acesse http://127.0.0.1:8000/api/documentation
 
 Este projeto é um desafio proposto pela Codeesh e está disponível no meu repositório pessoal do GitHub.
