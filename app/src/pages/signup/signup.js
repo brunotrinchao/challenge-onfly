@@ -6,9 +6,9 @@ export default {
   data() {
     return {
       form: {
-        email: "admin@admin.com",
-        password: "123456",
-        name: "Bruno",
+        email: "",
+        password: "",
+        name: "",
       },
     };
   },
