@@ -27,7 +27,6 @@ export default ({ store, Vue }) => {
       if (!token) {
         config.headers.Authorization = formatToken();
       }
-      console.log("headers", config.headers);
 
       if (config.loader) {
         Loading.show();

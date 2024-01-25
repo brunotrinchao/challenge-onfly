@@ -89,25 +89,6 @@ export default {
     },
   },
 
-  beforeMount() {
-    this.token = this.$store.getters.token;
-    this.user = this.$store.getters.user;
-    let sessionToken = SessionStorage.getItem("onfly-autentication");
-    let sessionUser = SessionStorage.getItem("onfly-session");
-    if (!sessionUser) {
-      this.btnLogout();
-    }
-
-    if (sessionToken) {
-      this.$store.commit("SET_TOKEN", sessionToken);
-    }
-
-    if (sessionUser) {
-      this.user = sessionUser;
-      this.$store.commit("SET_USER", sessionUser);
-    }
-  },
-
   methods: {
     btnDashboard() {
       this.$router.push({ name: "dashboard" });

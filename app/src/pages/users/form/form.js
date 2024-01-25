@@ -26,7 +26,6 @@ export default {
   },
 
   mounted() {
-    console.log(this.parameters);
     if (typeof this.parameters !== "undefined") {
       this.id = this.parameters.id;
       this.action = "update";
