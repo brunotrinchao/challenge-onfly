@@ -89,6 +89,15 @@ export default {
     },
   },
 
+  beforeMount() {
+    let sessionUser = SessionStorage.getItem("onfly-session");
+
+    if (sessionUser) {
+      this.user = sessionUser;
+      this.$store.commit("SET_USER", sessionUser);
+    }
+  },
+
   methods: {
     btnDashboard() {
       this.$router.push({ name: "dashboard" });
